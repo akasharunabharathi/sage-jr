@@ -1,0 +1,10 @@
+requests
+schedule
+python-decouple
+
+google-spreadsheet
+google-auth-oauthlib
+
+scikit-learn 
+pandas
+numpy
