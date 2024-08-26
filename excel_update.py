@@ -17,9 +17,25 @@ SHEET_ID = "1xgBtPU4p6WX2AJYTdQF3ZpV4Q3Q3ynM4yfXRSC1oCCY"
 SERVICE_ACCOUNT_FILE = "/content/sage-jr/token.json"
 RANGE_NAME = "Sheet1!A1:Z1000"
 
+def get_credentials():
+    credentials_dict = {
+        "type": os.environ.get("TYPE"),
+        "project_id": os.environ.get("PROJECT_ID"),
+        "private_key_id": os.environ.get("PRIVATE_KEY_ID"),
+        "private_key": os.environ.get("PRIVATE_KEY").replace('\\n', '\n'),
+        "client_email": os.environ.get("CLIENT_EMAIL"),
+        "client_id": os.environ.get("CLIENT_ID"),
+        "auth_uri": os.environ.get("AUTH_URI"),
+        "token_uri": os.environ.get("TOKEN_URI"),
+        "auth_provider_x509_cert_url": os.environ.get("AUTH_PROVIDER_X509_CERT_URL"),
+        "client_x509_cert_url": os.environ.get("CLIENT_X509_CERT_URL")
+    }
+    scopes = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+    return Credentials.from_service_account_info(credentials_dict, scopes=scopes)
+    
 def fetch_data_to_csv():
     # Authenticate and create the Sheets API service
-    creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=['https://www.googleapis.com/auth/spreadsheets.readonly'])
+    creds = get_credentials()
     service = build('sheets', 'v4', credentials=creds)
     # Download the Excel file
     
