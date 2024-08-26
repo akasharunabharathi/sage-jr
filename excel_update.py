@@ -43,11 +43,3 @@ def fetch_data_to_csv():
         return None
     
     return df
-
-def update_job():
-  while True:
-      try:
-          fetch_data_to_csv()
-      except Exception as e:
-          print(f"An error occurred: {e}")
-      time.sleep(1800)
