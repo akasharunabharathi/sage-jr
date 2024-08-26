@@ -11,9 +11,10 @@ from datetime import datetime
 from decouple import config
 
 # Load the environment variables
-EXCEL_URL = config("EXCEL_URL")
-SHEET_ID = config("SHEET_ID")
-SERVICE_ACCOUNT_FILE = "token.json"
+# EXCEL_URL = config("EXCEL_URL")
+# SHEET_ID = config("SHEET_ID")
+SHEET_ID = "1xgBtPU4p6WX2AJYTdQF3ZpV4Q3Q3ynM4yfXRSC1oCCY"
+SERVICE_ACCOUNT_FILE = "/content/sage-jr/token.json"
 RANGE_NAME = "Sheet1!A1:Z1000"
 
 def download_and_convert():
@@ -42,7 +43,7 @@ def download_and_convert():
         return
 
     # Convert to CSV
-    csv_filename = f"latest_excel_data.csv"
+    csv_filename = f"/content/sage-jr/latest_excel_data.csv"
     print(f"Converting to CSV: {csv_filename}")
     df.to_csv(csv_filename, index=False, encoding='utf-8')
 
