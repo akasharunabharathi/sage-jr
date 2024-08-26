@@ -25,8 +25,8 @@ def preprocess(text: str):
 
   return " ".join(filtered_tokens)
 
+# These lines will be auto-executed as part of the import
 df["processed_text"] = df[rel_column].apply(preprocess)
-
 vectorizer = TfidfVectorizer()
 
 # TF-IDF matrix shape: (|D|, |V|)
@@ -51,6 +51,7 @@ def search(query, top_k=3):
 
     # returns the rows of teh dataframe as Series objects
     return df.iloc[top_indices]
+
 
 def gradio_search(query):
     results = search(query)
