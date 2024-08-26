@@ -34,7 +34,7 @@ def fetch_data_to_csv():
     
     # Convert to DataFrame
     try:
-        df = pd.DataFrame(values[1:], columns=values[0])
+        df = pd.DataFrame(values[2:], columns=values[1])
         # Convert to CSV
         csv_filename = f"/content/sage-jr/latest_excel_data.csv"
         df.to_csv(csv_filename, index=False, encoding='utf-8')
