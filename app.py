@@ -1,6 +1,5 @@
 import gradio as gr
 from processor import gradio_search, periodic_update
-from excel_update import update_job
 import threading
 
 update_thread = threading.Thread(target=periodic_update)
