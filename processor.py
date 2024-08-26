@@ -75,6 +75,10 @@ def search(query, top_k=3):
 
 def gradio_search(query):
     results = search(query)
+  
+    if isinstance(results, str):  # Error message
+        return results
+  
     output = ""
     for i, (_, row) in enumerate(results.iterrows(), 1):
         output += f"\nResult {i}:\n"
@@ -82,7 +86,6 @@ def gradio_search(query):
             output += f"\t{column}: {row[column]}\n"
         output += "-" * 50 + "\n"
     return output
-
 
 # initial data load
 update_tfidf()
