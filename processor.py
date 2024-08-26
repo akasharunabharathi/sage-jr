@@ -39,8 +39,22 @@ def update_tfidf():
     # element (i, j) represents TF-IDF score for i-th word from the vocabulary w.r.t the j-th document/record.
     tfidf_matrix = vectorizer.fit_transform(df["processed_text"])
 
+def periodic_update():
+    while True:
+        try:
+            update_tfidf()
+        except Exception as e:
+            print(f"An Error occurred during the update: {e}")
+        time.sleep(1800)
+
 def search(query, top_k=3):
+    global df, vectorizer, tfidf_matrix
+    
+    if df is None or vectorizer is None or tfidf_matrix is None:
+        return "Data is still loading. Please try again in a moment."
+      
     processed_query = preprocess(query)
+  
     # shape (1, |V|), where |V| is the size of the vocabulary across the corpus
     query_vec = vectorizer.transform([processed_query])
 
