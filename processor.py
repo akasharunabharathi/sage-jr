@@ -80,12 +80,17 @@ def gradio_search(query):
     if isinstance(results, str):  # Error message
         return results
   
-    output = ""
+    output = "Here are some people you'll find interesting!\n"
     for i, (_, row) in enumerate(results.iterrows(), 1):
-        output += f"\nResult {i}:\n"
+        output += f"\n{i}. \n"
         for column in df.columns:
-            output += f"\t{column}: {row[column]}\n"
-        output += "-" * 50 + "\n"
+            if column == "One-liner":
+                output += len("\n{i}. ")*" " + f"is building: {row[column]}\n"
+            elif column != "processed_text":
+                output += len("\n{i}. ")*" " + f"{column}: {row[column]}\n"
+            else:
+                continue
+        output += "\n" + "-" * 50 + "\n"
     return output
 
 # initial data load
