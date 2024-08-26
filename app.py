@@ -1,5 +1,11 @@
 import gradio as gr
-from chatbot import gradio_search
+from processor import gradio_search, periodic_update
+from excel_update import update_job
+import threading
+
+update_thread = threading.Thread(target=periodic_update)
+update_thread.daemon = True
+update_thread.start()
 
 iface = gr.Interface(
     fn=gradio_search, 
