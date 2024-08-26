@@ -3,7 +3,7 @@ from chatbot import gradio_search
 
 iface = gr.Interface(
     fn=gradio_search, 
-    inputs=gr.Textbox(lines=2, placeholder="type away here"),
+    inputs=gr.Textbox(lines=2, placeholder="ask away here"),
     outputs="text",
     title="sage jr",
     description="Looking for someone working on films? SaaS? AI?",
