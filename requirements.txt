@@ -8,3 +8,5 @@ google-auth-oauthlib
 scikit-learn 
 pandas
 numpy
+
+gradio
