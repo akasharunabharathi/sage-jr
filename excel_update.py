@@ -1,8 +1,8 @@
 import requests
 import pandas as pd
-import schedule
 import time
 import os
+
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from pprint import pprint
@@ -17,7 +17,7 @@ SHEET_ID = "1xgBtPU4p6WX2AJYTdQF3ZpV4Q3Q3ynM4yfXRSC1oCCY"
 SERVICE_ACCOUNT_FILE = "/content/sage-jr/token.json"
 RANGE_NAME = "Sheet1!A1:Z1000"
 
-def download_and_convert():
+def fetch_data_to_csv():
     # Authenticate and create the Sheets API service
     creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=['https://www.googleapis.com/auth/spreadsheets.readonly'])
     service = build('sheets', 'v4', credentials=creds)
@@ -28,9 +28,6 @@ def download_and_convert():
     result = sheet.values().get(spreadsheetId=SHEET_ID, range=RANGE_NAME, ).execute()
     values = result.get('values', [])
 
-    print('Data retrieved from Google Sheet:')
-    pprint(values)
-
     if not values:
         print('No data found.')
         return
@@ -38,33 +35,19 @@ def download_and_convert():
     # Convert to DataFrame
     try:
         df = pd.DataFrame(values[1:], columns=values[0])
+        # Convert to CSV
+        csv_filename = f"/content/sage-jr/latest_excel_data.csv"
+        df.to_csv(csv_filename, index=False, encoding='utf-8')
     except Exception as e:
-        print(f"Error converting to DataFrame: {e}")
-        return
+        print(f"Error converting to CSV: {e}")
+        return None
+    
+    return df
 
-    # Convert to CSV
-    csv_filename = f"/content/sage-jr/latest_excel_data.csv"
-    print(f"Converting to CSV: {csv_filename}")
-    df.to_csv(csv_filename, index=False, encoding='utf-8')
-
-    print(f"Conversion completed. CSV file saved as {csv_filename}")
-
-def job():
-    print(f"Starting job at {datetime.now()}")
-    try:
-        download_and_convert()
-    except Exception as e:
-        print(f"An error occurred: {e}")
-    print(f"Job completed at {datetime.now()}")
-    print("Waiting for next run...\n")
-
-# # Schedule the job to run every hour
-# schedule.every().hour.do(job)
-
-# # Run the job immediately once
-job()
-
-# # Keep the script running
-# while True:
-#     schedule.run_pending()
-#     time.sleep(1)
+def update_job():
+  while True:
+      try:
+          fetch_data_to_csv()
+      except Exception as e:
+          print(f"An error occurred: {e}")
+      time.sleep(1800)
