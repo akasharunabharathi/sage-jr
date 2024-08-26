@@ -1,20 +1,21 @@
+from tkinter.constants import TRUE
 import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import string
 
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from excel_update import fetch_data_to_csv
+
 # Downloading necessary nltk data
-nltk.download("punkt")
-nltk.download("stopwords")
+nltk.download("punkt", quiet=True)
+nltk.download("stopwords", quiet=True)
 
-# Load the CSV file
-df = pd.read_csv("/content/sage-jr/latest_excel_data.csv")
-
-# Relevant column
-rel_column = "One-liner"
+df = None
+vectorizer = None
+tfidf_matrix = None
 
 def preprocess(text: str):
   tokens = word_tokenize(text.lower())
@@ -25,13 +26,18 @@ def preprocess(text: str):
 
   return " ".join(filtered_tokens)
 
-# These lines will be auto-executed as part of the import
-df["processed_text"] = df[rel_column].apply(preprocess)
-vectorizer = TfidfVectorizer()
+def update_tfidf():
+  global df, vectorizer, tfidf_matrix
+  df = fetch_data_to_csv()
+  if df is not None:
+    rel_column = "One-liner"
 
-# TF-IDF matrix shape: (|D|, |V|)
-# element (i, j) represents TF-IDF score for i-th word from the vocabulary w.r.t the j-th document/record.
-tfidf_matrix = vectorizer.fit_transform(df["processed_text"])
+    df["processed_text"] = df[rel_column].apply(preprocess)
+    vectorizer = TfidfVectorizer()
+
+    # TF-IDF matrix shape: (|D|, |V|)
+    # element (i, j) represents TF-IDF score for i-th word from the vocabulary w.r.t the j-th document/record.
+    tfidf_matrix = vectorizer.fit_transform(df["processed_text"])
 
 def search(query, top_k=3):
     processed_query = preprocess(query)
@@ -62,3 +68,7 @@ def gradio_search(query):
             output += f"\t{column}: {row[column]}\n"
         output += "-" * 50 + "\n"
     return output
+
+
+# initial data load
+update_tfidf()
