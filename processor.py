@@ -12,6 +12,7 @@ from excel_update import fetch_data_to_csv
 
 # Downloading necessary nltk data
 nltk.download("punkt", quiet=True)
+nltk.download("punkt_tab", quiet=True)
 nltk.download("stopwords", quiet=True)
 
 df = None
@@ -28,12 +29,12 @@ def preprocess(text: str):
   return " ".join(filtered_tokens)
 
 def update_tfidf():
+  print("Updating TF-IDF")
   global df, vectorizer, tfidf_matrix
   df = fetch_data_to_csv()
+  print("Now preparing to preprocess...\n\n")
   if df is not None:
-    rel_column = "One-liner"
-
-    df["processed_text"] = df[rel_column].apply(preprocess)
+    df["processed_text"] = (df["Bio (Optional)"] + "\n" + df["One-liner"]).apply(preprocess)
     vectorizer = TfidfVectorizer()
 
     # TF-IDF matrix shape: (|D|, |V|)
@@ -46,12 +47,14 @@ def periodic_update():
             update_tfidf()
         except Exception as e:
             print(f"An Error occurred during the update: {e}")
-        time.sleep(1800)
+        time.sleep(300)
 
 def search(query, top_k=3):
     global df, vectorizer, tfidf_matrix
     
     if df is None or vectorizer is None or tfidf_matrix is None:
+        if df is None:
+            return "DataFrame is still null."
         return "Data is still loading. Please try again in a moment."
       
     processed_query = preprocess(query)
@@ -82,15 +85,22 @@ def gradio_search(query):
   
     output = "Here are some people you'll find interesting!\n"
     for i, (_, row) in enumerate(results.iterrows(), 1):
-        output += f"\n{i}. \n"
+        output += f"\n{i}. {row['Name']}\n\n"
+        socials = f"You can reach out to {row['Name']} at:\n"
+        
         for column in df.columns:
             if column == "One-liner":
-                output += len("\n{i}. ")*" " + f"is building: {row[column]}\n"
-            elif column != "processed_text":
-                output += len("\n{i}. ")*" " + f"{column}: {row[column]}\n"
+                output += len("\n{i}. ")*" " + f"is working on: {row[column]}\n\n"
+            elif column == "Bio (Optional)" and row["Bio (Optional)"] != r"N/A":
+                output += len("\n{i}. ")*" " + f"Bio: {row[column]}\n\n"
+            elif column in ["LinkedIn", r"Twitter/X", "Instagram"]:
+                socials += f"\t{column}: {row[column]}\n"
+            elif column != "processed_text" and column != "Name":
+                output += len("\n{i}. ")*" " + f"{column}: {row[column]}\n\n"
             else:
                 continue
-        output += "\n" + "-" * 50 + "\n"
+            
+        output += "\n" + socials + "\n" + "-" * 50 + "\n"
     return output
 
 # initial data load
