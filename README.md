@@ -12,4 +12,4 @@ pinned: false
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
 
 # sage-jr
-buildspace is closing. it's up to us to keep the spirit alive!
+buildspace is closing, and with it, sage. but it was what allowed us to find the really cool people, so let's keep it alive!
