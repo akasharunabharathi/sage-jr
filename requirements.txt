@@ -5,8 +5,8 @@ python-decouple
 google-spreadsheet
 google-auth-oauthlib
 
-scikit-learn 
+scikit-learn
+nltk
 pandas
 numpy
-
 gradio
